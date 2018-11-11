@@ -25,10 +25,7 @@
       state: present
       push: no
       pull: no
-      # tag: v1
-      # force: yes
-      # repository: "hub.docker.com"
-      path: "/home/sk/demo-nodejs-mongodb-rest" 
+      path: "{{ playbook_dir }}" 
     tags:
       - build
       - webapp
