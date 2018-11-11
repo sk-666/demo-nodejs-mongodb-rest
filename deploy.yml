@@ -35,9 +35,6 @@
     docker_network:
       name: db_net
       state: present
-  #    connected:
-  #      - mongod
-  #      - web-app
     tags: network
   
   - name: Start MongoDB container
