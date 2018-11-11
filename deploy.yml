@@ -1,0 +1,80 @@
+---
+- hosts:
+    - localhost
+  tasks:
+  - name: Install python-docker on Debian
+    apt:
+      name: "python-docker"
+      state: present
+      update_cache: yes
+    when: ansible_pkg_mgr == "apt"
+    ignore_errors: yes
+    tags: initial
+  
+  - name: Install python-docker on Redhat-based
+    yum:
+      name: "python-docker-py"
+      state: present
+    when: ansible_os_family == "RedHat"
+    tags: initial
+  
+  - name: Build webapp image
+    docker_image:
+      dockerfile: Dockerfile
+      name: webapp
+      state: present
+      push: no
+      pull: no
+      # tag: v1
+      # force: yes
+      # repository: "hub.docker.com"
+      path: "/home/sk/demo-nodejs-mongodb-rest" 
+    tags:
+      - build
+      - webapp
+      
+  - name: Create private network
+    docker_network:
+      name: db_net
+      state: present
+  #    connected:
+  #      - mongod
+  #      - web-app
+    tags: network
+  
+  - name: Start MongoDB container
+    docker_container:
+      name: mongod
+      debug: yes
+      detach: yes
+      hostname: mongod
+      image: mongo
+      networks:
+        - name: db_net
+      purge_networks: yes
+      exposed_ports: "27017/tcp"
+      pull: no
+      state: started
+    tags:
+      - db
+      - start
+  
+  - name: Start webapp container
+    docker_container:
+      name: webapp
+      debug: yes
+      detach: yes
+      hostname: webapp
+      image: "webapp"
+      networks:
+        - name: db_net
+      published_ports: "8080:8080"
+      exposed_ports: "8080/tcp"
+      pull: no
+      state: started
+      env:
+        MONGODB_ADDON_URI: "mongodb://mongod:27017/test"
+        PORT: "8080"
+    tags: 
+      - webapp
+      - start
