@@ -23,6 +23,7 @@
       dockerfile: Dockerfile
       name: webapp
       state: present
+      fprce: yes
       push: no
       pull: no
       path: "{{ playbook_dir }}" 
