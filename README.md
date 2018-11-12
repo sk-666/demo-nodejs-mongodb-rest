@@ -1,3 +1,3 @@
 # NodeJS-MongoDB-Demo
 
-This is an example app that work with mongodb on clever cloud.
+You can deploy web app and Mongo DB just running sudo ansible-playbook deploy.yml
